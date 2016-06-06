@@ -148,6 +148,11 @@ PushNotification.configure({
         console.log( 'TOKEN:', token );
     },
 
+    // (optional) Called with an error upon registration (iOS)
+    onError: function(error) {
+        console.log( 'Error:', error );
+    },
+
     // (required) Called when a remote or local notification is opened or received
     onNotification: function(notification) {
         console.log( 'NOTIFICATION:', notification );

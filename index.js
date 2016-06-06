@@ -72,6 +72,7 @@ Notifications.configure = function(options: Object) {
 	if ( this.isLoaded === false ) {
 		this._onRegister = this._onRegister.bind(this);
 		this._onNotification = this._onNotification.bind(this);
+		this.callNative( 'addEventListener', [ 'error', this._onError ] );
 		this.callNative( 'addEventListener', [ 'register', this._onRegister ] );
 		this.callNative( 'addEventListener', [ 'notification', this._onNotification ] );
 		this.callNative( 'addEventListener', [ 'localNotification', this._onNotification ] );
@@ -95,6 +96,7 @@ Notifications.configure = function(options: Object) {
 
 /* Unregister */
 Notifications.unregister = function() {
+	this.callNative( 'removeEventListener', [ 'error', this._onError ] )
 	this.callNative( 'removeEventListener', [ 'register', this._onRegister ] )
 	this.callNative( 'removeEventListener', [ 'notification', this._onNotification ] )
 	this.callNative( 'removeEventListener', [ 'localNotification', this._onNotification ] )
@@ -138,6 +140,12 @@ Notifications.localNotificationSchedule = function(details: Object) {
 };
 
 /* Internal Functions */
+Notifications._onError = function(error) {
+	if ( this.onError !== false ) {
+		this.onError(error);
+	}
+}
+
 Notifications._onRegister = function(token: String) {
 	if ( this.onRegister !== false ) {
 		this.onRegister({
