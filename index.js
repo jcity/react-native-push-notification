@@ -70,6 +70,7 @@ Notifications.configure = function(options: Object) {
 	}
 
 	if ( this.isLoaded === false ) {
+		this._onError = this._onError.bind(this);
 		this._onRegister = this._onRegister.bind(this);
 		this._onNotification = this._onNotification.bind(this);
 		this.callNative( 'addEventListener', [ 'error', this._onError ] );
