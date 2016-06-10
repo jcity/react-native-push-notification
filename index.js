@@ -26,6 +26,12 @@ var Notifications = {
 	}
 };
 
+Notifications.FetchResult = {
+  NewData: 'UIBackgroundFetchResultNewData',
+  NoData: 'UIBackgroundFetchResultNoData',
+  ResultFailed: 'UIBackgroundFetchResultFailed',
+};
+
 Notifications.callNative = function(name: String, params: Array) {
 	if ( typeof this.handler[name] === 'function' ) {
 		if ( typeof params !== 'array' &&
@@ -173,7 +179,12 @@ Notifications._onNotification = function(data, isFromBackground = null) {
 				data: data.getData(),
 				badge: data.getBadgeCount(),
 				alert: data.getAlert(),
-				sound: data.getSound()
+				sound: data.getSound(),
+				finish: function(fetchResult) {
+					if (data.finish) {
+						data.finish(fetchResult);
+					}
+				},
 			});
 		} else {
 			var notificationData = {
