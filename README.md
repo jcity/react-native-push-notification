@@ -57,7 +57,7 @@ In your `AndroidManifest.xml`
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-        
+
         .....
 
 ```
@@ -214,12 +214,20 @@ PushNotification.localNotification({
     color: "red", // (optional) default: system default
 
     /* iOS and Android properties */
-    message: "My Notification Message" // (required)
+    message: "My Notification Message", // (required)
+
+    /* iOS only properties */
+    applicationIconBadgeNumber: 12,
+    soundName: "default"
 });
 
 PushNotification.localNotificationSchedule({
 	message: "My Notification Message", // (required)
 	date: new Date(Date.now() + (60 * 1000)) // in 60 secs
+
+    /* iOS only properties */
+    applicationIconBadgeNumber: 12,
+    soundName: "default"
 });
 ```
 
