@@ -115,11 +115,15 @@ Notifications.unregister = function() {
  * @param {String}		details.message - The message displayed in the notification alert.
  * @param {String}		details.title  -  ANDROID ONLY: The title displayed in the notification alert.
  * @param {String}		details.ticker -  ANDROID ONLY: The ticker displayed in the status bar.
- * @param {Object}		details.userInfo -  iOS ONLY: The userInfo used in the notification alert.
+ * @param {Object}		details.userInfo - iOS ONLY: The userInfo used in the notification alert.
+ * @param {String}		details.applicationIconBadgeNumber - iOS ONLY: The badge number to set on the app.
+ * @param {String}		details.soundName - iOS ONLY: The sound to play for the notification.
  */
 Notifications.localNotification = function(details: Object) {
 	if ( Platform.OS === 'ios' ) {
 		this.handler.presentLocalNotification({
+			applicationIconBadgeNumber: details.applicationIconBadgeNumber,
+			soundName: details.soundName,
 			alertBody: details.message,
 			userInfo: details.userInfo,
 		});
@@ -130,12 +134,16 @@ Notifications.localNotification = function(details: Object) {
 
 /**
  * Local Notifications Schedule
- * @param {Object}		details (same as localNotification)
+ * @param {Object}	details (same as localNotification)
  * @param {Date}		details.date - The date and time when the system should deliver the notification
+ * @param {String}	details.applicationIconBadgeNumber - iOS ONLY: The badge number to set on the app.
+ * @param {String}	details.soundName - iOS ONLY: The sound to play for the notification.
  */
 Notifications.localNotificationSchedule = function(details: Object) {
 	if ( Platform.OS === 'ios' ) {
 		this.handler.scheduleLocalNotification({
+			applicationIconBadgeNumber: details.applicationIconBadgeNumber,
+			soundName: details.soundName,
 			fireDate: details.date,
 			alertBody: details.message
 		});
