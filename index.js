@@ -130,8 +130,6 @@ Notifications.localNotification = function(details: Object) {
 			alertBody: details.message,
 			alertAction: details.alertAction,
 			category: details.category,
-			soundName: soundName,
-			applicationIconBadgeNumber: details.number,
 			userInfo: details.userInfo
 		});
 	} else {
