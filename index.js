@@ -84,12 +84,13 @@ Notifications.configure = function(options: Object) {
 		this.callNative( 'addEventListener', [ 'notification', this._onNotification ] );
 		this.callNative( 'addEventListener', [ 'localNotification', this._onNotification ] );
 
-		if ( typeof options.popInitialNotification === 'undefined' || options.popInitialNotification === true ) {
-			var tempFirstNotification = this.callNative( 'popInitialNotification' );
-
-			if ( tempFirstNotification !== null ) {
-				this._onNotification(tempFirstNotification, true);
-			}
+		if ( typeof options.popInitialNotification === 'undefined' ||
+			 options.popInitialNotification === true ) {
+			this.popInitialNotification(function(firstNotification) {
+				if ( firstNotification !== null ) {
+					this._onNotification(firstNotification, true);
+				}
+			}.bind(this));
 		}
 
 		this.isLoaded = true;
@@ -121,11 +122,17 @@ Notifications.unregister = function() {
  */
 Notifications.localNotification = function(details: Object) {
 	if ( Platform.OS === 'ios' ) {
+		const soundName = !details.hasOwnProperty("playSound") || details.playSound === true ? 'default' : '';// empty string results in no sound
+
 		this.handler.presentLocalNotification({
 			applicationIconBadgeNumber: details.applicationIconBadgeNumber,
 			soundName: details.soundName,
 			alertBody: details.message,
-			userInfo: details.userInfo,
+			alertAction: details.alertAction,
+			category: details.category,
+			soundName: soundName,
+			applicationIconBadgeNumber: details.number,
+			userInfo: details.userInfo
 		});
 	} else {
 		this.handler.presentLocalNotification(details);
@@ -173,17 +180,17 @@ Notifications._onRegister = function(token: String) {
 
 Notifications._onNotification = function(data, isFromBackground = null) {
 	if ( isFromBackground === null ) {
-		if ( Platform.OS === 'ios' ) {
-			isFromBackground = ( AppState.currentState === 'background' );
-		} else {
-			isFromBackground = ( data.foreground === false );
-		}
+		isFromBackground = (
+			data.foreground === false ||
+			AppState.currentState === 'background'
+		);
 	}
 
 	if ( this.onNotification !== false ) {
 		if ( Platform.OS === 'ios' ) {
 			this.onNotification({
 				foreground: ! isFromBackground,
+				userInteraction: isFromBackground,
 				message: data.getMessage(),
 				data: data.getData(),
 				badge: data.getBadgeCount(),
@@ -243,8 +250,10 @@ Notifications.getApplicationIconBadgeNumber = function() {
 	return this.callNative('getApplicationIconBadgeNumber', arguments);
 };
 
-Notifications.popInitialNotification = function() {
-	return this.callNative('popInitialNotification', arguments);
+Notifications.popInitialNotification = function(handler) {
+	this.callNative('getInitialNotification').then(function(result){
+		handler(result);
+	});
 };
 
 Notifications.abandonPermissions = function() {
