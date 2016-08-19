@@ -28,15 +28,21 @@ import java.util.Map;
 import java.util.Set;
 
 public class RNPushNotification extends ReactContextBaseJavaModule implements ActivityEventListener {
-    private RNPushNotificationHelper mRNPushNotificationHelper;
+    private final RNPushNotificationHelper mRNPushNotificationHelper;
+    private final Intent mLaunchIntent;
 
     public RNPushNotification(ReactApplicationContext reactContext) {
-        super(reactContext);
+        this(reactContext, null);
+    }
 
+    public RNPushNotification(ReactApplicationContext reactContext, Intent launchIntent) {
+        super(reactContext);
+        this.mLaunchIntent = launchIntent;
         reactContext.addActivityEventListener(this);
         mRNPushNotificationHelper = new RNPushNotificationHelper((Application) reactContext.getApplicationContext());
         registerNotificationsRegistration();
         registerNotificationsReceiveNotification();
+
     }
 
     @Override
@@ -56,8 +62,8 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
 
         if (reactContext.hasActiveCatalystInstance()) {
             reactContext
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit(eventName, params);
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit(eventName, params);
         }
     }
 
@@ -90,7 +96,7 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
         getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-               notifyNotification(intent.getBundleExtra("notification"));
+                notifyNotification(intent.getBundleExtra("notification"));
             }
         }, intentFilter);
     }
@@ -151,9 +157,12 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
     @ReactMethod
     public void getInitialNotification(Promise promise) {
         WritableMap params = Arguments.createMap();
+        Intent intent = mLaunchIntent;
         Activity activity = getCurrentActivity();
-        if (activity != null) {
-            Intent intent = activity.getIntent();
+        if (intent == null && activity != null) {
+            intent = activity.getIntent();
+        }
+        if (intent != null) {
             Bundle bundle = intent.getBundleExtra("notification");
             if (bundle != null) {
                 bundle.putBoolean("foreground", false);
