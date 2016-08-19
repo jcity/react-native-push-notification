@@ -31,9 +31,15 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
     private RNPushNotificationHelper mRNPushNotificationHelper;
     private final Random mRandomNumberGenerator = new Random(System.currentTimeMillis());
     private RNPushNotificationJsDelivery mJsDelivery;
+    private final Intent mLaunchIntent;
 
     public RNPushNotification(ReactApplicationContext reactContext) {
+        this(reactContext, null);
+    }
+
+    public RNPushNotification(ReactApplicationContext reactContext, Intent launchIntent) {
         super(reactContext);
+        mLaunchIntent = launchIntent;
 
         reactContext.addActivityEventListener(this);
 
@@ -139,8 +145,11 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
     public void getInitialNotification(Promise promise) {
         WritableMap params = Arguments.createMap();
         Activity activity = getCurrentActivity();
-        if (activity != null) {
-            Intent intent = activity.getIntent();
+        Intent intent = mLaunchIntent;
+        if (intent == null && activity != null) {
+            intent = activity.getIntent();
+        }
+        if (intent != null) {
             Bundle bundle = intent.getBundleExtra("notification");
             if (bundle != null) {
                 bundle.putBoolean("foreground", false);
