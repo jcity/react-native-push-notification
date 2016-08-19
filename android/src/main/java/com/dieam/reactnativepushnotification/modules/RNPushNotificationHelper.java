@@ -22,7 +22,7 @@ public class RNPushNotificationHelper {
 
     private Context mContext;
 
-    public RNPushNotificationHelper(Application context) {
+    public RNPushNotificationHelper(Context context) {
         mContext = context;
     }
 
