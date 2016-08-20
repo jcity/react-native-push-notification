@@ -249,6 +249,10 @@ Notifications.getApplicationIconBadgeNumber = function() {
 };
 
 Notifications.popInitialNotification = function(handler) {
+	if (this.handler.popInitialNotification) {
+                handler(this.callNative('popInitialNotification'));
+		return;
+	}
 	this.callNative('getInitialNotification').then(function(result){
 		handler(result);
 	});
