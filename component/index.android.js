@@ -16,13 +16,19 @@ var NotificationsComponent = function() {
 };
 
 NotificationsComponent.prototype.getInitialNotification = function () {
-    return RNPushNotification.getInitialNotification()
-        .then(function (notification) {
-            if (notification && notification.dataJSON) {
-                return JSON.parse(notification.dataJSON);
-            }
-            return null;
+    if (RNPushNotification.getInitialNotification) {
+        return RNPushNotification.getInitialNotification()
+            .then(function (notification) {
+                if (notification && notification.dataJSON) {
+                    return JSON.parse(notification.dataJSON);
+                }
+                return null;
         });
+    } else if (RNPushNotification.initialNotification) {
+	return new Promise(function(resolve) { resolve(JSON.parse(RNPushNotification.initialNotification)); });
+    } else {
+	return new Promise(function(resolve) { resolve(null); });
+    }
 };
 
 NotificationsComponent.prototype.requestPermissions = function(senderID: string) {
