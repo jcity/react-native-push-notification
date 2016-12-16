@@ -160,6 +160,8 @@ Notifications.localNotification = function(details: Object) {
 Notifications.localNotificationSchedule = function(details: Object) {
 	if ( Platform.OS === 'ios' ) {
 		this.handler.scheduleLocalNotification({
+			applicationIconBadgeNumber: details.applicationIconBadgeNumber,
+			soundName: details.soundName,
 			fireDate: details.date.toISOString(),
 			alertBody: details.message,
 			userInfo: details.userInfo
