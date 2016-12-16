@@ -29,6 +29,10 @@ var Notifications = {
 	}
 };
 
+// Available keys: NewData, NoData, ResultFailed.
+// https://github.com/facebook/react-native/blob/f9ab788c6bcf886170259c132ea4f9ef39e6bfd3/Libraries/PushNotificationIOS/PushNotificationIOS.js#L120
+Notifications.FetchResult = RNNotifications.FetchResult;
+
 Notifications.callNative = function(name: String, params: Array) {
 	if ( typeof this.handler[name] === 'function' ) {
 		if ( typeof params !== 'array' &&
@@ -200,7 +204,12 @@ Notifications._onNotification = function(data, isFromBackground = null) {
 				data: data.getData(),
 				badge: data.getBadgeCount(),
 				alert: data.getAlert(),
-				sound: data.getSound()
+				sound: data.getSound(),
+				finish: function(fetchResult) {
+					if (data.finish) {
+						data.finish(fetchResult);
+					}
+				}
 			});
 		} else {
 			var notificationData = {
